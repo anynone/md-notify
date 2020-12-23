@@ -12,7 +12,7 @@
 
 ### 预计支持的markdown标签
 markdown标签和内容使用[content]进行分隔，类似section,比如下面的结构
-```shell script
+```ini
 title=1
 sub_title=副标题
 image=1.jpg
