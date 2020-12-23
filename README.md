@@ -11,7 +11,15 @@
 - 按照标签筛选接口
 
 ### 预计支持的markdown标签
-markdown标签使用#!空格开头， 比如 `#! title=标题名称`
+markdown标签和内容使用[content]进行分隔，类似section,比如下面的结构
+```shell script
+title=1
+sub_title=副标题
+image=1.jpg
+other=3
+[content]
+这里开始是markdown文档开始部分
+```
 默认支持的标签如下,尽量简短
 |  标签   | 说明  |
 |  ----  | ----  |
