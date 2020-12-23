@@ -80,4 +80,18 @@ func (md *MarkDown) ParseContent(bytes []byte) inter_struct.Content {
 	return mdContent
 }
 
+func (md *MarkDown) MarkdownContent() []byte{
+	bytes, e := ioutil.ReadFile(md.FileName)
+	if e != nil {
+		return []byte{}
+	}
+
+	content := strings.SplitAfter(string(bytes), "[content]")
+	if len(content) < 2 {
+		return []byte{}
+	}
+
+	return []byte(content[1])
+}
+
 

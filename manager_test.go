@@ -39,7 +39,12 @@ func TestMdManager_ListMarkDown(t *testing.T) {
 		t.Fatal(e)
 	}
 
-	down := mdManager.ListMarkDown()
-	t.Log(down)
+	for _, mdId := range mdManager.SortIndex {
+		t.Log(mdManager.Papers[mdId].FileName, mdManager.Papers[mdId].Content.Sort)
+	}
+	//down := mdManager.ListMarkDown()
+	//t.Log(down)
+
+	//t.Log(string(manager.Papers["12d21a21adb7312b147715b35d8f8b44"].MarkdownContent()))
 }
 
