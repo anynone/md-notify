@@ -1,4 +1,4 @@
-# md-notify
+# md-notify(开发中)
 按照文件夹监控markdown文档变化，提供列表，检索，markdown文档内容接口
 因为要写一个博客系统替换之前的wordpress博客，原因是wordpress太重。
 目标是需要一个不依赖数据库,简单运行即可，前后端分离，复制即迁移的轻量级博客系统。wordpress显然无法满足需求。要实现markdown文件变更实时更新前台浏览必须有一个markdown文档管理的组建。也就是本项目的最终目标。
