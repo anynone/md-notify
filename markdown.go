@@ -6,6 +6,8 @@ import (
 	"io/ioutil"
 	"md-notify/inter_struct"
 	"os"
+	"strconv"
+	"strings"
 )
 
 type MarkDown struct {
@@ -31,14 +33,51 @@ func (md *MarkDown) Load(file *os.File) *MarkDown{
 }
 
 func (md *MarkDown) ParseContent(bytes []byte) inter_struct.Content {
-	return inter_struct.Content{
+
+	mdContent := inter_struct.Content{
 		Title:    "",
 		Class:    "",
 		Sort:     0,
 		SubTitle: "",
 		Image:    "",
-		Extra:    nil,
-	}	
+		Extra: map[string]string{},
+	}
+	content := string(bytes)
+
+	split := strings.SplitAfter(content, "[content]")
+
+	config := strings.ReplaceAll(split[0], "[content]", "")
+
+	// 分行
+	configSlice := strings.Split(config, "\n")
+
+	// 遍历,逐个写入
+	for _, value := range configSlice {
+		kv := strings.Split(value, "=")
+		if len(kv) < 2 {
+			continue
+		}
+		switch kv[0] {
+		case "title":
+			mdContent.Title = kv[1]
+		case "class":
+			mdContent.Class = kv[1]
+		case "sort":
+			num, e := strconv.Atoi(kv[1])
+			if e != nil {
+				continue
+			}
+			mdContent.Sort = num
+		case "sub_title":
+			mdContent.SubTitle = kv[1]
+		case "image":
+			mdContent.Image = kv[1]
+		default:
+			mdContent.Extra[kv[0]] = kv[1]
+		}
+	}
+
+	return mdContent
 }
 
 

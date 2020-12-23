@@ -45,18 +45,29 @@ func (mdm *MdManager) acceptMdFile(finfo os.FileInfo) error{
 
 func (mdm * MdManager) InitAllMarkdown() (*MdManager, error){
 
-	//allFileInfo, e := md.AllMarkdownFile()
-	//if e != nil {
-	//	return nil, e
-	//}
-	//
-	//for _, finfo := range allFileInfo {
-	//
-	//}
+	infos, e := mdm.AllMarkdownFile()
+	if e != nil {
+		return nil, e
+	}
 
+	for _, value := range infos {
+		e := mdm.acceptMdFile(value)
+		if e != nil {
+			return nil, e
+		}
+	}
 
-	return nil,nil
+	return mdm,nil
 
+}
+
+func (mdm *MdManager) ListMarkDown()[]MarkDown{
+	mds := []MarkDown{}
+	for _, value := range mdm.Papers {
+		mds = append(mds, *value)
+	}
+
+	return mds
 }
 
 func (mdm *MdManager) AllMarkdownFile() ([]os.FileInfo, error){

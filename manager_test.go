@@ -22,3 +22,24 @@ func TestMdManager_AllMarkdownFile(t *testing.T){
 	log.Println(manager.Papers)
 }
 
+func TestMdManager_InitAllMarkdown(t *testing.T) {
+	manager := MdManager{}.New("/home/yuechenxing/go/src/md-notify/md_files")
+	mdManager, e := manager.InitAllMarkdown()
+	if e != nil {
+		t.Fatal(e)
+	}
+
+	t.Log(mdManager)
+}
+
+func TestMdManager_ListMarkDown(t *testing.T) {
+	manager := MdManager{}.New("/home/yuechenxing/go/src/md-notify/md_files")
+	mdManager, e := manager.InitAllMarkdown()
+	if e != nil {
+		t.Fatal(e)
+	}
+
+	down := mdManager.ListMarkDown()
+	t.Log(down)
+}
+
