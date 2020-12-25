@@ -3,8 +3,8 @@ package mdnotify
 import (
 	"crypto/md5"
 	"encoding/hex"
+	"github.com/anynone/mdnotify/inter_struct"
 	"io/ioutil"
-	"mdnotify/inter_struct"
 	"os"
 	"strconv"
 	"strings"
