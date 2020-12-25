@@ -2,8 +2,9 @@ package md_notify
 
 import (
 	"errors"
-	"log"
+	"io/ioutil"
 	"os"
+	"strings"
 )
 
 type MdManager struct {
@@ -11,8 +12,8 @@ type MdManager struct {
 	Papers map[string]*MarkDown // 使用文件名md5作为key
 	SortIndex []string // 排序号对应文件名md5,可能多个
 	TitleIndex map[string]string // 标题倒排索引
-	ClassIndex map[string]string // 类别倒排索引
-	ExtraTagIndex map[string][]string // 其他标签的倒排索引
+	ClassIndex map[string]map[string]uint8 // 类别倒排索引
+	//ExtraTagIndex map[string][string]string // 其他标签的倒排索引
 }
 
 func (mdm MdManager) New(folder string) *MdManager{
@@ -21,19 +22,31 @@ func (mdm MdManager) New(folder string) *MdManager{
 		Papers: map[string]*MarkDown{},
 		SortIndex: []string{},
 		TitleIndex: map[string]string{},
-		ClassIndex: map[string]string{},
-		ExtraTagIndex: map[string][]string{}}
+		ClassIndex: map[string]map[string]uint8{},
+		//ExtraTagIndex: map[string][]string{}
+	}
 }
 
 func (mdm *MdManager) acceptMdFile(finfo os.FileInfo) error{
-	log.Println(finfo.Name())
+	//log.Println(finfo.Name())
 	file, e := os.Open(mdm.folder + string(os.PathSeparator) + finfo.Name())
 	if e != nil {
 		return e
 	}
 	one := &MarkDown{}
 	md := one.Load(file)
+
+	_, ok := mdm.Papers[md.Id]
+	if ok {
+		// 清除和当前加入文件的信息
+		mdm.clearMdInfo(md)
+	}
+
 	mdm.Papers[md.Id] = md
+	if _, ok := mdm.ClassIndex[md.Content.Class]; !ok {
+		mdm.ClassIndex[md.Content.Class] = map[string]uint8{}
+	}
+	mdm.ClassIndex[md.Content.Class][md.Id] = 0
 
 	// 排序索引更新
 	if md.Content.Sort >= len(mdm.SortIndex) {
@@ -60,8 +73,10 @@ func (mdm *MdManager) acceptMdFile(finfo os.FileInfo) error{
 
 	}
 
+
 	return nil
 }
+
 
 func (mdm * MdManager) InitAllMarkdown() (*MdManager, error){
 
@@ -110,6 +125,73 @@ func (mdm *MdManager) AllMarkdownFile() ([]os.FileInfo, error){
 	}
 
 	return fileInfos, nil
+}
+
+func (mdm *MdManager) MarkdownContent(id string) string {
+	md, ok := mdm.Papers[id]
+	if !ok {
+		return ""
+	}
+
+	bytes, _ := ioutil.ReadFile(md.FileName)
+
+	if bytes == nil {
+		bytes = []byte{}
+	}
+
+
+	sarr := strings.SplitAfter(string(bytes), "[content]")
+
+	return sarr[1]
+}
+
+func (mdm *MdManager) ListByClass(value string, start int, len int) []MarkDown {
+	tagPapers, ok := mdm.ClassIndex[value]
+	if !ok {
+		return []MarkDown{}
+	}
+	// 按照sortindex排序
+	ret := []MarkDown{}
+	for _, mdId := range mdm.SortIndex {
+		if _, ok := tagPapers[mdId]; ok {
+			ret = append(ret, *mdm.Papers[mdId])
+		}
+	}
+
+	return ret
+}
+
+func (mdm *MdManager) clearMdInfo(down *MarkDown) {
+	// 清除文章
+	delete(mdm.Papers, down.Id)
+	// 清除排序
+	mdSortKey := -1
+	for key, value := range mdm.SortIndex {
+		if value == down.Id {
+			mdSortKey = key
+		}
+	}
+	if mdSortKey >= 0 {
+		 indexLen := len(mdm.SortIndex)
+		if indexLen <= 1 {
+			mdm.SortIndex = []string{}
+		}else{
+			if mdSortKey == 0 {
+				mdm.SortIndex = mdm.SortIndex[1:]
+			}
+
+			if mdSortKey == indexLen -1 {
+				mdm.SortIndex = mdm.SortIndex[0:mdSortKey]
+			}
+
+			if mdSortKey >0 && mdSortKey < indexLen - 1 {
+				mdm.SortIndex = append(mdm.SortIndex[0:mdSortKey], mdm.SortIndex[mdSortKey +1 :]...)
+			}
+		}
+	}
+
+	// 清除类别
+	delete(mdm.ClassIndex[down.Content.Class], down.Id)
 }
 
 

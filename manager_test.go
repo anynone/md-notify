@@ -48,3 +48,20 @@ func TestMdManager_ListMarkDown(t *testing.T) {
 	//t.Log(string(manager.Papers["12d21a21adb7312b147715b35d8f8b44"].MarkdownContent()))
 }
 
+func TestMdManager_MarkdownContent(t *testing.T) {
+	manager := MdManager{}.New("/home/yuechenxing/go/src/md-notify/md_files")
+	manager.InitAllMarkdown()
+	t.Log(manager.SortIndex)
+
+	content := manager.MarkdownContent("b968bc4af7d9aae06bccaabad60bf35a")
+	t.Log(content)
+}
+
+func TestMdManager_ListByTag(t *testing.T) {
+	manager := MdManager{}.New("/home/yuechenxing/go/src/md-notify/md_files")
+	manager.InitAllMarkdown()
+
+	list := manager.ListByClass("类别1", 0, 10)
+	t.Log(list)
+}
+
