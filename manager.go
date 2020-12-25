@@ -1,4 +1,4 @@
-package md_notify
+package mdnotify
 
 import (
 	"errors"

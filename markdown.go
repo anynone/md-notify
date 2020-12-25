@@ -1,10 +1,10 @@
-package md_notify
+package mdnotify
 
 import (
 	"crypto/md5"
 	"encoding/hex"
 	"io/ioutil"
-	"md-notify/inter_struct"
+	"mdnotify/inter_struct"
 	"os"
 	"strconv"
 	"strings"
